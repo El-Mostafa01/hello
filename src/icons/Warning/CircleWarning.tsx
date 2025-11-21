@@ -1,0 +1,21 @@
+import type { SVGProps } from "react";
+import { IconBase } from "../IconBase";
+const SvgCircleWarning = (props: SVGProps<SVGSVGElement>) => (
+  <IconBase
+    xmlns="http://www.w3.org/2000/svg"
+    width="1em"
+    height="1em"
+    fill="none"
+    viewBox="0 0 24 24"
+    {...props}
+   {...props}>
+    <path
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M12 8.45v4M12 21a9 9 0 1 1 0-18 9 9 0 0 1 0 18m.05-5.55v.1h-.1v-.1z"
+    />
+  </IconBase>
+);
+export default SvgCircleWarning;
