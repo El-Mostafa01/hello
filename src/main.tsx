@@ -9,9 +9,11 @@ createRoot(document.getElementById('root')!).render(
 )
 
 // Register the service worker so the app installs & runs offline on the Pixel.
+// Uses the Vite base URL so it works under a subpath (e.g. GitHub Pages /hello/).
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {
+    const swUrl = `${import.meta.env.BASE_URL}sw.js`
+    navigator.serviceWorker.register(swUrl, { scope: import.meta.env.BASE_URL }).catch(() => {
       /* offline support is best-effort */
     })
   })
