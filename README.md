@@ -1,73 +1,79 @@
-# React + TypeScript + Vite
+# SCINC iOS-Glass — an iOS 18 look for your Pixel
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A **liquid-glass, iOS 18–style home screen** built with React + Vite + Tailwind,
+using the SCINC icon library. It runs in the browser and installs on a Pixel
+(or any Android phone) as a **PWA** — "Add to Home screen" launches it
+full-screen, no address bar, like a native app.
 
-Currently, two official plugins are available:
+> **Reality check:** Android/Pixel can't have its *entire* OS re-skinned to iOS
+> without rooting. This is the closest no-root approach that produces something
+> you actually install and use: a full-screen iOS-glass launcher/home experience.
+> For theming the real system UI too, pair it with a launcher (Nova / Launcher iOS)
+> — see *"Make the whole phone match"* below.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## What's inside
 
-## React Compiler
+- **Lock screen** — giant iOS clock, live date, frosted notification stack, swipe-up hint.
+- **Home screen** — glass "squircle" app icons with gradients & badges, Spotlight search, page dots, frosted dock, dynamic-island pill.
+- **Control Center** — frosted toggle tiles (Wi-Fi/Bluetooth/etc.), now-playing card, working brightness slider — with real `backdrop-blur` over the home screen.
+- **App open/close** — tap any icon for a full-screen app view; the **SCINC Icons** app embeds the original 430-icon library (search + copy SVG/JSX).
+- **PWA** — installable, full-screen `standalone`, offline-capable via a service worker, with generated maskable app icons.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Everything glassy uses genuine `backdrop-filter: blur() saturate()` with layered
+specular highlights, plus an animated gradient-blob wallpaper.
 
-## Expanding the ESLint configuration
+## Run it
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev          # open the printed http://localhost:5173
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Production build / local preview:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npx vite build
+npx vite preview     # serves the built PWA on http://localhost:4173
 ```
+
+## Install on your Pixel
+
+1. Deploy the built `dist/` to any HTTPS host (Vercel, Netlify, GitHub Pages, Cloudflare Pages).
+   *(A PWA must be served over HTTPS to be installable.)*
+2. On the Pixel, open the URL in **Chrome**.
+3. Menu **⋮ → Add to Home screen → Install**.
+4. Launch it from the home screen — it opens full-screen as **iOS-Glass**.
+
+> Testing on your local Wi-Fi instead? Run `npm run dev -- --host` and open the
+> Network URL on the phone. Install prompts still need HTTPS, so a deployed
+> build is the reliable path.
+
+## Make the whole phone match (optional, no root)
+
+To push the iOS feel onto the *actual* Android system UI:
+
+1. **Launcher:** install *Nova Launcher* (or a dedicated "Launcher iOS 18" app).
+2. **Icon pack:** apply an iOS-style pack, or export glyphs from the SCINC Icons app here.
+3. **Wallpaper:** use a blurred gradient like the one in this app.
+4. **Widgets:** *KWGT* for glass clock/weather widgets.
+5. Pin this PWA to the dock for the glass Control-Center / lock-screen feel.
+
+## Project layout
+
+```
+src/ios/
+  IOSHome.tsx       # orchestrator: device frame, wallpaper, screen routing
+  LockScreen.tsx    # clock + notifications + swipe hint
+  HomeScreen.tsx    # search, app grid, dock, page dots
+  ControlCenter.tsx # frosted toggles, now-playing, brightness
+  AppSheet.tsx      # full-screen opened-app view
+  IconGallery.tsx   # the original SCINC icon library, as an "app"
+  AppIcon.tsx       # a single glass squircle icon
+  StatusBar.tsx     # live clock + signal/wifi/battery
+  apps.ts           # app + dock definitions (icon -> gradient mapping)
+  theme.css         # glass utilities, wallpaper, motion
+scripts/
+  gen-pwa-icons.py  # regenerates the PWA app icons in /public
+```
+
+Regenerate the app icons any time with `python3 scripts/gen-pwa-icons.py`.
