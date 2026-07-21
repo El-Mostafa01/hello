@@ -1,6 +1,10 @@
 name: Deploy iOS-Glass to GitHub Pages
 
 # Builds the Vite app and publishes dist/ to GitHub Pages over HTTPS.
+#
+# ONE-TIME SETUP (required — the Actions token can't do this itself):
+#   Repo Settings -> Pages -> "Build and deployment" ->
+#   Source: "GitHub Actions".  Then this workflow deploys on every push.
 on:
   push:
     branches:
@@ -29,23 +33,15 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Configure Pages (auto-enable if needed)
-        id: pages
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
-
-      # Use the base path GitHub Pages assigns (e.g. "/hello/") so all
-      # asset, manifest, and service-worker URLs resolve correctly.
+      # Base path matches the Pages URL https://<user>.github.io/hello/
+      # (default in vite.config.ts). Override with BASE_PATH if needed.
       - name: Build
-        env:
-          BASE_PATH: ${{ steps.pages.outputs.base_path }}
         run: npx vite build
 
       - name: Upload artifact
